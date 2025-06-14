@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout Code from GitHub') {
             steps {
                 git branch: 'main', url: 'https://github.com/ChaitanyaKulkarni9400/DevOps_e2e.git'
-            
+            }
         }
 
         stage('Build Backend Image') {
