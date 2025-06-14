@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+        DOCKERHUB_USERNAME = 'chaitanya9420'
     }
 
     stages {
@@ -15,7 +16,7 @@ pipeline {
         stage('Build Backend Image') {
             steps {
                 script {
-                    docker.build("chaitanya9420/backend:latest", "./backend")
+                    backendImage = docker.build("${DOCKERHUB_USERNAME}/backend:latest", "./backend")
                 }
             }
         }
@@ -23,27 +24,17 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 script {
-                    docker.build("chaitanya9420/frontend:latest", "./frontend")
+                    frontendImage = docker.build("${DOCKERHUB_USERNAME}/frontend:latest", "./frontend")
                 }
             }
         }
 
-        stage('Login to DockerHub') {
+        stage('Login & Push Images to DockerHub') {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
-                        echo 'Logged in to DockerHub'
-                    }
-                }
-            }
-        }
-
-        stage('Push Images') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
-                        docker.image("chaitanya9420/devops:backend").push()
-                        docker.image("chaitanya9420/devops:frontend").push()
+                        backendImage.push()
+                        frontendImage.push()
                     }
                 }
             }
